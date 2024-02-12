@@ -1,0 +1,151 @@
+.dropdown {
+  display: block;
+}
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+li {
+  float: right;
+  list-style-type: none;
+}
+li a,
+.dropbtn {
+  display: inline-block;
+  color: white;
+  text-align: center;
+  padding: 0px 0px;
+  text-decoration: none;
+}
+li a i{
+  margin-top: 5px;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  position: center;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+.dropdown-content a {
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+.ku {
+  color: green;
+  font-size: 40px;
+  text-align: center;
+
+  animation: reveal 5s linear infinite;
+}
+.min {
+  color: green;
+  font-size: 40px;
+  text-align: center;
+}
+span {
+  color: green;
+  font-size: 20px;
+  font-weight: bold;
+}
+.agg {
+  display: inline-block;
+  padding: 20px 40px;
+  background-color: green;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: transform 0.3s ease;
+  align-items: center;
+  margin-left: 500px;
+  font-size: 10px;
+}
+.agg:hover {
+  transform: scale(1.1);
+}
+.agg:active {
+  transform: scale(1.2);
+}
+.mk {
+  text-align: center;
+  padding-top: 5px;
+}
+.km {
+  color: green;
+  text-align: center;
+  font-size: 30px;
+
+  animation: reveal 2s linear infinite;
+}
+
+@keyframes reveal {
+  0% {
+    opacity: 0;
+    letter-spacing: 100%;
+  }
+
+  50% {
+    opacity: 1;
+    letter-spacing: 0;
+  }
+}
+
+/* Pour les appareils avec une largeur supérieure à 768 pixels */
+@media (min-width: 768px) {
+  /* Afficher la barre de navigation en permanence */
+  .nav {
+    display: flex;
+  }
+}
+
+/* Pour les appareils avec une largeur inférieure à 768 pixels */
+@media (max-width: 767px) {
+  /* Masquer la barre de navigation par défaut */
+  .nav {
+    display: none;
+  }
+
+  /* Afficher la barre de navigation lorsque l'utilisateur clique sur le bouton */
+  .nav-toggle {
+    display: block;
+  }
+}
+
+table {
+  margin-top: 50px;
+  padding: 20px;
+  border-collapse: collapse;
+  width: 17%;
+}
+@media (max-width: 1024px) {
+  .table-respo {
+    width: 50%;
+    max-width: none;
+    overflow-x: auto;
+  }
+}
+
+th,
+td {
+  border: 2px solid black;
+  border-color: green;
+  padding: 9px;
+}
+
+th {
+  justify-content: center;
+  text-align: center;
+}
