@@ -1,103 +1,94 @@
 <?php
-
-
-
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-//Load Composer's autoloader
+// Charger l'autoloader de Composer
 require 'vendor/autoload.php';
 
-if (isset($_POST['send'])) {
-    // Récupérer les données du formulaire
-    $nom = filter_var($_POST['name'], FILTER_SANITIZE_STRING);
-    $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-    $number = filter_var($_POST['number'], FILTER_SANITIZE_STRING);
-    $message = filter_var($_POST['message'], FILTER_SANITIZE_STRING);
+// Traitement de la requête AJAX pour l'envoi du formulaire de contact
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  // Récupérer les données du formulaire
+  $nom = isset($_POST['name']) ? $_POST['name'] : '';
+  $email = isset($_POST['email']) ? $_POST['email'] : '';
+  $number = isset($_POST['number']) ? $_POST['number'] : '';
+  $address = isset($_POST['address']) ? $_POST['address'] : '';
+  $message = isset($_POST['message']) ? $_POST['message'] : '';
+
+  // Insertion dans la base de données ou envoi par e-mail, selon le cas
+  if (!empty($nom) && !empty($email) && !empty($number) && !empty($address) && !empty($message)) {
+    try {
+      // Créer une instance de PHPMailer
+      $mail = new PHPMailer(true);
+      // Paramètres du serveur SMTP
+      $mail->isSMTP();
+      $mail->Host = 'mail.agriculturepourtous.com';
+      $mail->SMTPAuth = true;
+      $mail->Username = 'info@agriculturepourtous.com';
+      $mail->Password = 'agriculturepourtous2005';
+      $mail->SMTPSecure = 'tls';
+      $mail->Port = 587;
+
+      // Destinataires
+      $mail->setFrom('noreply@agriculturepourtous.com', 'agriculturepourtous');
+      $mail->addAddress('info@agriculturepourtous.com', 'agriculturepourtous');
+
+      // Contenu de l'e-mail
+      $mail->isHTML(true);
+      $mail->Subject = "Contacte Agriculture Pour Tous";
+      $mail->Body = "
+          <html>
+          <head>
+              <style>
+                  body {
+                      background-color: #000;
+                      color: #fff;
+                      font-family: Arial, sans-serif;
+                      padding: 20px;
+                      border: 2px solid #fff;
+                      max-width: 600px;
+                      margin: 0 auto;
+                  }
+                  h2 {
+                      text-align: center;
+                  }
+                  p {
+                      margin-bottom: 10px;
+                  }
+                  .logo {
+                      display: block;
+                      margin: 0 auto;
+                  }
+              </style>
+          </head>
+          <body>
+              <img class='logo' src='https://i.imgur.com/cGcgWgn.png' alt='Logo' width='250'>
+              <h2>Informations du formulaire :</h2>
+              <p><strong>Nom :</strong> $nom</p>
+              <p><strong>Email :</strong> $email</p>
+              <p><strong>Numero :</strong> $number</p>
+              <p><strong>Adresse :</strong> $address</p>
+              <hr>
+              <p><strong>Message :</strong><br>$message</p>
+          </body>
+          </html>
+      ";
+
+      // Envoyer l'e-mail
+      $mail->send();
+
+      // Répondre avec un message de succès
+      echo json_encode(['success' => true, 'message' => 'Votre message a été envoyé avec succès.']);
+      exit;
+    } catch (Exception $e) {
+      // Répondre avec un message d'erreur
+      echo json_encode(['success' => false, 'error' => 'Une erreur s\'est produite lors de l\'envoi de l\'e-mail, veuillez réessayer.' . $mail->ErrorInfo]);
+      exit;
+    }
+  } else {
+    // Répondre avec un message d'erreur si un champ est vide
+    echo json_encode(['success' => false, 'error' => 'Les champs ne peuvent pas être vides.']);
+    exit;
+  }
 }
-// Échapper les données pour les afficher dans du HTML
-$nom = htmlspecialchars($nom, ENT_QUOTES, 'UTF-8');
-$email = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
-$number = htmlspecialchars($number, ENT_QUOTES, 'UTF-8');
-$message = htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
 
-$message = "Nom : " . $nom . "<br>" . " Email : " . $email . "<br>" . "Numero : " . $number . "<br>" . "message : " . $message;
-
-//Create an instance; passing `true` enables exceptions
-$mail = new PHPMailer(true);
-
-try {
-    //Server settings
-    $mail->isSMTP();                                            //Send using SMTP
-    $mail->Host = 'mail.agriculturepourtous.com';                     //Set the SMTP server to send through
-    $mail->SMTPAuth = true;                                   //Enable SMTP authentication
-    $mail->Username = 'info@agriculturepourtous.com';                     //SMTP username
-    $mail->Password = 'agriculturepourtous2005';                               //SMTP password
-    $mail->SMTPSecure = 'tls';          //Enable implicit TLS encryption
-    $mail->Port = 587;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
-
-    //Recipients
-    $mail->setFrom('noreply@agriculturepourtous.com', 'agriculture pour tous');
-    $mail->addAddress('info@agriculturepourtous.com', 'agriculture pour tous');     //Add a recipient
-
-    //Content
-    $mail->isHTML(true);                                  //Set email format to HTML
-    $mail->Subject = 'Contact Agriculture pour tous';
-    $mail->Body = $message;
-
-    $mail->send();
-    echo "
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>GeeksForGeeks Sweet alert</title>
-      <script src=
-    'https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js'>
-      </script>
-    </head>
-    <body>
-      <script>
-      swal({
-        title: 'E-mail envoyé !',
-        text: 'Votre e-mail a été envoyé avec succès.',
-        icon: 'success',
-        confirmButtonText: 'OK'
-      }).then((value) => {
-        // Si l'utilisateur appuie sur OK, retourne à la page précédente
-        if (value) {
-          window.history.back();
-        }
-      });
-      </script>
-    </body>
-    </html>
-    ";
-} catch (Exception $e) {
-    echo "
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>GeeksForGeeks Sweet alert</title>
-      <script src=
-    'https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js'>
-      </script>
-    </head>
-    <body>
-      <script>
-      swal({
-        title: 'Erreur',
-        text: 'Une erreur s\'est produite lors de l\'envoi de l\'e-mail, veuillez réessayer',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      }).then((value) => {
-        // Si l'utilisateur appuie sur OK, retourne à la page précédente
-        if (value) {
-          window.history.back();
-        }
-      });
-      </script>
-    </body>
-    </html>
-    ";
-}
